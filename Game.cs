@@ -37,7 +37,8 @@ namespace LiveSplit.ComponentAutosplitter
         /// <returns></returns>
         public virtual GameEvent ReadLegacyEvent(string id)
         {
-            // in general we don't know so just return an EmptyEvent
+            // in general we don't know (and also don't need it)
+            // so just return an EmptyEvent
             return new EmptyEvent();
         }
     }

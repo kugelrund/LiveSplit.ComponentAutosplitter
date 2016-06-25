@@ -287,6 +287,7 @@ namespace LiveSplit.ComponentAutosplitter
                         }
 
                         // Create a new GameEvent object based on the read type and attributes
+                        // TODO: Exception handling
                         gameEvent = Activator.CreateInstance(type, attributes.ToArray()) as GameEvent;
                     }
                     else
@@ -333,6 +334,10 @@ namespace LiveSplit.ComponentAutosplitter
             MoveEvents(true);
         }
 
+        /// <summary>
+        /// For convenience we also allow to open the ChangeEventForm by double clicking
+        /// on a cell.
+        /// </summary>
         private void dgvSegmentEvents_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == Event.Index)
@@ -341,6 +346,10 @@ namespace LiveSplit.ComponentAutosplitter
             }
         }
 
+        /// <summary>
+        /// Signals that events changed if thats the case. This makes sense because
+        /// this event fires when the form closes.
+        /// </summary>
         private void Settings_HandleDestroyed(object sender, EventArgs e)
         {
             if (eventsChanged)
