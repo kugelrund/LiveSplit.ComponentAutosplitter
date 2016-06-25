@@ -42,17 +42,31 @@ namespace LiveSplit.ComponentAutosplitter
             return gameEvents;
         }
 
+        /// <summary>
+        /// Updates the list of segments in the DataGridView. Also adds or removes rows
+        /// of the DataGridView to match the amount of segments.
+        /// </summary>
         public void UpdateSegments()
         {
-            if (dgvSegmentEvents.Rows.Count < Segments.Count + 1)
+            // Find out how many rows we need and add or remove rows accordingly
+            int neededRows = Segments.Count + 1;
+            if (dgvSegmentEvents.Rows.Count < neededRows)
             {
-                dgvSegmentEvents.Rows.Add(Segments.Count + 1 - dgvSegmentEvents.Rows.Count);
+                // we need some more rows, add them
+                dgvSegmentEvents.Rows.Add(neededRows - dgvSegmentEvents.Rows.Count);
+            }
+            while (dgvSegmentEvents.Rows.Count > neededRows)
+            {
+                // delete unnecessary rows
+                dgvSegmentEvents.Rows.RemoveAt(dgvSegmentEvents.Rows.Count - 1);
             }
 
+            // Fill out the DataGridView with the names of the segments
             for (int i = 0; i < Segments.Count; i += 1)
             {
                 dgvSegmentEvents.Rows[i].Cells[Segment.Index].Value = Segments[i].Name;
             }
+            // We need to make a special entry for the final split
             dgvSegmentEvents.Rows[Segments.Count].Cells[Segment.Index].Value = "--- End ---";
         }
 
@@ -206,20 +220,12 @@ namespace LiveSplit.ComponentAutosplitter
             foreach (int oldIndex in selectedIndices)
             {
                 newIndex = up ? oldIndex - 1 : oldIndex + 1;
-                if (newIndex >= 0)
+                if (newIndex >= 0 && newIndex < dgvSegmentEvents.Rows.Count)
                 {
                     tempValue = dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value;
-                    if (oldIndex < dgvSegmentEvents.Rows.Count - 1)
-                    {
-                        dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value =
-                            dgvSegmentEvents.Rows[newIndex].Cells[Event.Index].Value;
-                        dgvSegmentEvents.Rows[newIndex].Cells[Event.Index].Value = tempValue;
-                    }
-                    else
-                    {
-                        dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value = null;
-                        dgvSegmentEvents.Rows.Add("", tempValue);
-                    }
+                    dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value =
+                        dgvSegmentEvents.Rows[newIndex].Cells[Event.Index].Value;
+                    dgvSegmentEvents.Rows[newIndex].Cells[Event.Index].Value = tempValue;
                     dgvSegmentEvents.Rows[newIndex].Selected = true;
                     dgvSegmentEvents.Rows[oldIndex].Selected = false;
                 }
