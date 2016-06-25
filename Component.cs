@@ -1,9 +1,9 @@
-﻿using LiveSplit.Model;
-using LiveSplit.UI.Components;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
+using LiveSplit.Model;
+using LiveSplit.UI.Components;
 
 namespace LiveSplit.ComponentAutosplitter
 {
@@ -13,11 +13,11 @@ namespace LiveSplit.ComponentAutosplitter
 
         private Settings settings;
         private TimerModel model = null;
-        
+
         private GameInfo info = null;
-        private GameEvent[] eventList = null;        
-        
-        public override string ComponentName => game.Name +  " Auto Splitter";
+        private GameEvent[] eventList = null;
+
+        public override string ComponentName => game.Name + " Auto Splitter";
 
         public Component(Game game, LiveSplitState state)
         {
@@ -53,7 +53,7 @@ namespace LiveSplit.ComponentAutosplitter
                         model.Split();
                     }
                 }
-                
+
                 if (settings.PauseGameTime)
                 {
                     state.IsGameTimePaused = !info.InGame;
@@ -71,7 +71,7 @@ namespace LiveSplit.ComponentAutosplitter
                     info = null;
                 }
             }
-            
+
             settings.Segments = state.Run;
         }
 
@@ -79,7 +79,7 @@ namespace LiveSplit.ComponentAutosplitter
         {
             eventList = settings.GetEventList();
         }
-        
+
         public override System.Windows.Forms.Control GetSettingsControl(UI.LayoutMode mode)
         {
             settings.UpdateSegments();

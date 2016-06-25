@@ -49,7 +49,6 @@ namespace LiveSplit.ComponentAutosplitter
                     dgvAttributes.CurrentCell = dgvAttributes.Rows[0].Cells[AttributeValue.Index];
                 }
             }
-
         }
 
         private GameEvent SelectedGameEvent()
@@ -59,7 +58,7 @@ namespace LiveSplit.ComponentAutosplitter
             {
                 attributes.Add(row.Cells[AttributeValue.Index].Value as string);
             }
-            
+
             return Activator.CreateInstance(lstEventTypes.SelectedItem.GetType(),
                                              attributes.ToArray()) as GameEvent;
         }
