@@ -13,6 +13,7 @@ namespace LiveSplit.ComponentAutosplitter
         {
             InitializeComponent();
             this.game = game;
+            NewEvent = null;
 
             foreach (Type eventType in game.EventTypes)
             {
@@ -21,7 +22,9 @@ namespace LiveSplit.ComponentAutosplitter
 
             if (gameEvent != null)
             {
-                lstEventTypes.SelectedIndex = Array.IndexOf(game.EventTypes, gameEvent.GetType());
+                int index = Array.IndexOf(game.EventTypes, gameEvent.GetType());
+                lstEventTypes.Items[index] = gameEvent;
+                lstEventTypes.SelectedIndex = index;
             }
             else
             {
@@ -35,14 +38,21 @@ namespace LiveSplit.ComponentAutosplitter
             GameEvent selectedEvent = (lstEventTypes.SelectedItem as GameEvent);
             if (selectedEvent.AttributeNames != null)
             {
-                foreach (string attribute in selectedEvent.AttributeNames)
+                for (int i = 0; i < selectedEvent.AttributeNames.Length; i += 1)
                 {
-                    dgvAttributes.Rows.Add(attribute, "");
+                    dgvAttributes.Rows.Add(selectedEvent.AttributeNames[i] + ":",
+                                           selectedEvent.AttributeValues[i]);
+                }
+
+                if (dgvAttributes.Rows.Count > 0)
+                {
+                    dgvAttributes.CurrentCell = dgvAttributes.Rows[0].Cells[AttributeValue.Index];
                 }
             }
+
         }
 
-        private void UpdateGameEvent()
+        private GameEvent SelectedGameEvent()
         {
             List<string> attributes = new List<string>();
             foreach (DataGridViewRow row in dgvAttributes.Rows)
@@ -50,8 +60,8 @@ namespace LiveSplit.ComponentAutosplitter
                 attributes.Add(row.Cells[AttributeValue.Index].Value as string);
             }
             
-            NewEvent = Activator.CreateInstance(lstEventTypes.SelectedItem.GetType(),
-                                                 attributes.ToArray()) as GameEvent;
+            return Activator.CreateInstance(lstEventTypes.SelectedItem.GetType(),
+                                             attributes.ToArray()) as GameEvent;
         }
 
         private void lstTypes_SelectedIndexChanged(object sender, EventArgs e)
@@ -61,8 +71,15 @@ namespace LiveSplit.ComponentAutosplitter
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            UpdateGameEvent();
+            NewEvent = SelectedGameEvent();
             Close();
+        }
+
+        private void dgvAttributes_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            lstEventTypes.Items[lstEventTypes.SelectedIndex] = SelectedGameEvent();
+            UpdateAttributes();
+            btnOk.Focus();
         }
     }
 }

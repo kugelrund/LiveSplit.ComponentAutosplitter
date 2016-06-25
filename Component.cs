@@ -64,7 +64,7 @@ namespace LiveSplit.ComponentAutosplitter
                 Process gameProcess = Process.GetProcessesByName(game.ProcessName).FirstOrDefault();
                 if (gameProcess != null && !gameProcess.HasExited)
                 {
-                    info = Activator.CreateInstance(game.InfoType, gameProcess) as GameInfo;
+                    info = Activator.CreateInstance(typeof(GameInfo), gameProcess) as GameInfo;
                 }
                 else
                 {

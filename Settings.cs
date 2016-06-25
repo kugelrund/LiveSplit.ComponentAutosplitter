@@ -23,10 +23,7 @@ namespace LiveSplit.ComponentAutosplitter
         public Settings(Game game)
         {
             InitializeComponent();
-
-            this.game = game;
-
-            // TODO: set defaults
+            this.game = game;            
             PauseGameTime = true;
         }
 
@@ -34,19 +31,11 @@ namespace LiveSplit.ComponentAutosplitter
         {
             int length = dgvSegmentEvents.Rows.Count;
             GameEvent[] gameEvents = new GameEvent[length + 1];
-            GameEvent gameEvent;
 
             for (int i = 0; i < length; ++i)
             {
-                gameEvent = dgvSegmentEvents.Rows[i].Cells[Event.Index].Value as GameEvent;
-                if (gameEvent == null)
-                {
-                    gameEvents[i] = new EmptyEvent();
-                }
-                else
-                {
-                    gameEvents[i] = gameEvent;
-                }
+                gameEvents[i] = (dgvSegmentEvents.Rows[i].Cells[Event.Index].Value as GameEvent)
+                                ?? new EmptyEvent();
             }
 
             gameEvents[length] = new EmptyEvent();
@@ -78,7 +67,7 @@ namespace LiveSplit.ComponentAutosplitter
 
         private void ChangeEvent()
         {
-            DataGridViewCell eventCell = dgvSegmentEvents.Rows[dgvSegmentEvents.SelectedCells[0].RowIndex].Cells[Event.Index];
+            DataGridViewCell eventCell = dgvSegmentEvents.SelectedRows[0].Cells[Event.Index];
             ChangeEventForm form = new ChangeEventForm(game, eventCell.Value as GameEvent);
             form.ShowDialog();
             eventCell.Value = form.NewEvent;
@@ -183,14 +172,60 @@ namespace LiveSplit.ComponentAutosplitter
             }
         }
 
+        private void dgvSegmentEvents_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == Event.Index)
+            {
+                ChangeEvent();
+            }
+        }
+
+        private void MoveEvents(bool up)
+        {
+            int[] selectedIndices = new int[dgvSegmentEvents.SelectedRows.Count];
+            for (int i = 0; i < dgvSegmentEvents.SelectedRows.Count; i += 1)
+            {
+                selectedIndices[i] = dgvSegmentEvents.SelectedRows[i].Index;
+            }
+            Array.Sort(selectedIndices);
+            if (!up)
+            {
+                Array.Reverse(selectedIndices);
+            }
+
+            int newIndex;
+            object tempValue;
+            foreach (int oldIndex in selectedIndices)
+            {
+                newIndex = up ? oldIndex - 1 : oldIndex + 1;
+                if (newIndex >= 0)
+                {
+                    tempValue = dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value;
+                    if (oldIndex < dgvSegmentEvents.Rows.Count - 1)
+                    {
+                        dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value =
+                            dgvSegmentEvents.Rows[newIndex].Cells[Event.Index].Value;
+                        dgvSegmentEvents.Rows[newIndex].Cells[Event.Index].Value = tempValue;
+                    }
+                    else
+                    {
+                        dgvSegmentEvents.Rows[oldIndex].Cells[Event.Index].Value = null;
+                        dgvSegmentEvents.Rows.Add("", tempValue);
+                    }
+                    dgvSegmentEvents.Rows[newIndex].Selected = true;
+                    dgvSegmentEvents.Rows[oldIndex].Selected = false;
+                }
+            }
+        }
+
         private void btnMoveDown_Click(object sender, EventArgs e)
         {
-            // TODO
+            MoveEvents(false);
         }
 
         private void btnMoveUp_Click(object sender, EventArgs e)
         {
-            // TODO
+            MoveEvents(true);
         }
     }
 }

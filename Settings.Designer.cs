@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lblUsedEvents = new System.Windows.Forms.Label();
             this.chkPauseGameTime = new System.Windows.Forms.CheckBox();
             this.btnChangeEvent = new System.Windows.Forms.Button();
@@ -109,16 +110,19 @@
             this.Segment,
             this.Event});
             this.dgvSegmentEvents.Location = new System.Drawing.Point(13, 23);
-            this.dgvSegmentEvents.MultiSelect = false;
             this.dgvSegmentEvents.Name = "dgvSegmentEvents";
             this.dgvSegmentEvents.RowHeadersVisible = false;
-            this.dgvSegmentEvents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dgvSegmentEvents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvSegmentEvents.Size = new System.Drawing.Size(355, 387);
             this.dgvSegmentEvents.TabIndex = 20;
+            this.dgvSegmentEvents.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSegmentEvents_CellDoubleClick);
             // 
             // Segment
             // 
             this.Segment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.Segment.DefaultCellStyle = dataGridViewCellStyle1;
             this.Segment.FillWeight = 40F;
             this.Segment.HeaderText = "Segment";
             this.Segment.Name = "Segment";
@@ -130,6 +134,7 @@
             this.Event.FillWeight = 60F;
             this.Event.HeaderText = "Event";
             this.Event.Name = "Event";
+            this.Event.ReadOnly = true;
             // 
             // Settings
             // 

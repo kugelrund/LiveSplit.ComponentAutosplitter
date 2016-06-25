@@ -3,38 +3,32 @@ using System.Diagnostics;
 
 namespace LiveSplit.ComponentAutosplitter
 {
-    public abstract class Game
+    abstract class Game
     {
         public abstract Type[] EventTypes { get; }
-        public abstract Type InfoType { get; }
+
         public abstract string Name { get; }
         public abstract string ProcessName { get; }
     }
 
-    public abstract class GameInfo
+    partial class GameInfo
     {
         private Process gameProcess;
 
         public Process GameProcess => gameProcess;
-        public bool PauseGameTime { get; private set; }
-
-        public GameInfo(Process gameProcess)
-        {
-            this.gameProcess = gameProcess;
-        }
-
-        public abstract void Update();
+        public bool PauseGameTime { get; protected set; }
     }
 
-    public abstract class GameEvent
+    abstract class GameEvent
     {
         public abstract string[] AttributeNames { get; }
         public abstract string[] AttributeValues { get; protected set; }
-        
+        public abstract string Description { get; }
+
         public abstract bool HasOccured(GameInfo info);
     }
 
-    public class EmptyEvent : GameEvent
+    class EmptyEvent : GameEvent
     {
         private static readonly string[] attributeNames = new string[0] { };
         private static string[] attributeValues = new string[0] { };
@@ -45,10 +39,16 @@ namespace LiveSplit.ComponentAutosplitter
             get { return attributeValues; }
             protected set { attributeValues = value; }
         }
+        public override string Description => "No event";
 
         public override bool HasOccured(GameInfo info)
         {
             return false;
+        }
+
+        public override string ToString()
+        {
+            return "";
         }
     }
 }
