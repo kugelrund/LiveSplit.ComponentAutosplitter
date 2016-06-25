@@ -151,6 +151,7 @@
             this.Padding = new System.Windows.Forms.Padding(7);
             this.Size = new System.Drawing.Size(470, 457);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSegmentEvents)).EndInit();
+            this.HandleDestroyed += Settings_HandleDestroyed;
             this.ResumeLayout(false);
             this.PerformLayout();
 

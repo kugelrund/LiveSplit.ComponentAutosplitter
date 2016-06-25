@@ -163,7 +163,7 @@ namespace LiveSplit.ComponentAutosplitter
             ChangeEvent();
         }
 
-        private void settings_HandleDestroyed(object sender, EventArgs e)
+        private void Settings_HandleDestroyed(object sender, EventArgs e)
         {
             if (eventsChanged)
             {
@@ -216,6 +216,8 @@ namespace LiveSplit.ComponentAutosplitter
                     dgvSegmentEvents.Rows[oldIndex].Selected = false;
                 }
             }
+
+            eventsChanged = true;
         }
 
         private void btnMoveDown_Click(object sender, EventArgs e)

@@ -16,7 +16,7 @@ namespace LiveSplit.ComponentAutosplitter
         private Process gameProcess;
 
         public Process GameProcess => gameProcess;
-        public bool PauseGameTime { get; protected set; }
+        public bool InGame { get; protected set; }
     }
 
     abstract class GameEvent

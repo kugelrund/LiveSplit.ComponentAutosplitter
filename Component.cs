@@ -56,7 +56,7 @@ namespace LiveSplit.ComponentAutosplitter
                 
                 if (settings.PauseGameTime)
                 {
-                    state.IsGameTimePaused = info.PauseGameTime;
+                    state.IsGameTimePaused = !info.InGame;
                 }
             }
             else
