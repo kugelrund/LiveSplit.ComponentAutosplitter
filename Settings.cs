@@ -1,8 +1,8 @@
-﻿using LiveSplit.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Xml;
+using LiveSplit.Model;
 
 namespace LiveSplit.ComponentAutosplitter
 {
@@ -23,7 +23,7 @@ namespace LiveSplit.ComponentAutosplitter
         public Settings(Game game)
         {
             InitializeComponent();
-            this.game = game;            
+            this.game = game;
             PauseGameTime = true;
         }
 
@@ -126,17 +126,25 @@ namespace LiveSplit.ComponentAutosplitter
                 foreach (XmlNode eventNode in settings["usedEvents"].ChildNodes)
                 {
                     GameEvent gameEvent;
-                    Type type = Type.GetType(eventNode.FirstChild.InnerText);
-                    List<string> attributes = new List<string>();
-                    foreach (XmlNode node in eventNode.ChildNodes)
+                    if (eventNode.FirstChild.HasChildNodes)
                     {
-                        if (node != eventNode.FirstChild)
+                        Type type = Type.GetType(eventNode.FirstChild.InnerText);
+                        List<string> attributes = new List<string>();
+                        foreach (XmlNode node in eventNode.ChildNodes)
                         {
-                            attributes.Add(node.InnerText);
+                            if (node != eventNode.FirstChild)
+                            {
+                                attributes.Add(node.InnerText);
+                            }
                         }
-                    }
 
-                    gameEvent = Activator.CreateInstance(type, attributes.ToArray()) as GameEvent;
+                        gameEvent = Activator.CreateInstance(type, attributes.ToArray()) as GameEvent;
+                    }
+                    else
+                    {
+                        // fallback to read old autosplitter settings
+                        gameEvent = game.ReadLegacyEvent(eventNode.InnerText);
+                    }
 
                     dgvSegmentEvents.Rows[i].Cells[Event.Index].Value = gameEvent;
                     i += 1;

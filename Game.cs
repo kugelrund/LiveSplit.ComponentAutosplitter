@@ -9,6 +9,11 @@ namespace LiveSplit.ComponentAutosplitter
 
         public abstract string Name { get; }
         public abstract string ProcessName { get; }
+
+        public virtual GameEvent ReadLegacyEvent(string id)
+        {
+            return new EmptyEvent();
+        }
     }
 
     partial class GameInfo
