@@ -80,6 +80,7 @@ namespace LiveSplit.ComponentAutosplitter
         {
             this.gameProcess = gameProcess;
             baseAddress = gameProcess.MainModule.BaseAddress;
+            GetVersion();
         }
 
         /// <summary>
@@ -96,6 +97,11 @@ namespace LiveSplit.ComponentAutosplitter
         /// be implemented for each specific game
         /// </summary>
         partial void UpdateInfo();
+
+        /// <summary>
+        /// Gets the version of the game and sets stuff up accordingly.
+        /// </summary>
+        partial void GetVersion();
     }
 
     /// <summary>
