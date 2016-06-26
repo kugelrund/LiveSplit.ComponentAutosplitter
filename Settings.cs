@@ -85,8 +85,20 @@ namespace LiveSplit.ComponentAutosplitter
         /// </summary>
         public void UpdateSegments()
         {
-            // Find out how many rows we need and add or remove rows accordingly
-            int neededRows = Segments.Count + 1;
+            // Find out how many rows we need
+            int neededRows;
+            if (Segments == null)
+            {
+                // without segments we still need the end split
+                neededRows = 1;
+            }
+            else
+            {
+                // need one row for each segment + one for the end split
+                neededRows = Segments.Count + 1;
+            }
+
+            // add or remove rows accordingly
             if (dgvSegmentEvents.Rows.Count < neededRows)
             {
                 // we need some more rows, add them
@@ -99,7 +111,7 @@ namespace LiveSplit.ComponentAutosplitter
             }
 
             // Fill out the DataGridView with the names of the segments
-            for (int i = 0; i < Segments.Count; i += 1)
+            for (int i = 0; i < neededRows - 1; i += 1)
             {
                 dgvSegmentEvents.Rows[i].Cells[Segment.Index].Value = Segments[i].Name;
             }
