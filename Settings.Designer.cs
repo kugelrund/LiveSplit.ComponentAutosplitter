@@ -124,7 +124,7 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
             this.Segment.DefaultCellStyle = dataGridViewCellStyle1;
             this.Segment.FillWeight = 40F;
-            this.Segment.HeaderText = "Segment";
+            this.Segment.HeaderText = "Start this segment";
             this.Segment.Name = "Segment";
             this.Segment.ReadOnly = true;
             // 
@@ -132,7 +132,7 @@
             // 
             this.Event.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Event.FillWeight = 60F;
-            this.Event.HeaderText = "Event";
+            this.Event.HeaderText = "on this event";
             this.Event.Name = "Event";
             this.Event.ReadOnly = true;
             // 
@@ -151,7 +151,6 @@
             this.Padding = new System.Windows.Forms.Padding(7);
             this.Size = new System.Drawing.Size(470, 457);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSegmentEvents)).EndInit();
-            this.HandleDestroyed += Settings_HandleDestroyed;
             this.ResumeLayout(false);
             this.PerformLayout();
 

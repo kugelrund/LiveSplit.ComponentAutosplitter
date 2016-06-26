@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 using LiveSplit.Model;
+using LiveSplit.UI;
 
 namespace LiveSplit.ComponentAutosplitter
 {
@@ -51,6 +53,7 @@ namespace LiveSplit.ComponentAutosplitter
         {
             InitializeComponent();
             this.game = game;
+            HandleDestroyed += Settings_HandleDestroyed;
             PauseGameTime = true;
         }
 
@@ -203,6 +206,56 @@ namespace LiveSplit.ComponentAutosplitter
         }
 
         /// <summary>
+        /// Create xml that saves the current autosplitter settings.
+        /// </summary>
+        /// <param name="document">
+        /// XmlDocument to write to.
+        /// </param>
+        /// <param name="settingsNode">
+        /// XmlNode to write to.
+        /// </param>
+        /// <returns>
+        /// A hash representing the settings. Used in LiveSplit to notice
+        /// changed settings.
+        /// </returns>
+        private int CreateSettingsNode(XmlDocument document, XmlElement settingsNode)
+        {
+            // start the hash by creating a setting for the autosplitter version
+            int hash = SettingsHelper.CreateSetting(document, settingsNode, "version",
+                                                    Assembly.GetExecutingAssembly().GetName().Version);
+
+            // create node for storing the current list of events. For each
+            // event it's type (derived from GameEvent) will be saved together
+            // with it's AttributeValues.
+            XmlElement usedEventsNode = (document == null ? null : document.CreateElement("usedEvents"));
+            XmlElement eventNode;
+            GameEvent gameEvent;
+            foreach (DataGridViewRow row in dgvSegmentEvents.Rows)
+            {
+                // get event from row
+                gameEvent = (row.Cells[Event.Index].Value as GameEvent) ?? new EmptyEvent();
+
+                // create xmlnode for thsi event
+                eventNode = (document == null ? null : document.CreateElement("event"));
+
+                // save derived type of the event
+                hash ^= SettingsHelper.CreateSetting(document, eventNode, "type", gameEvent.GetType().ToString());
+                // save all attribute values
+                foreach (string attributeValue in gameEvent.AttributeValues)
+                {
+                    hash ^= SettingsHelper.CreateSetting(document, eventNode, "attribute", attributeValue);
+                }
+
+                usedEventsNode.AppendChild(eventNode);
+            }
+            settingsNode.AppendChild(usedEventsNode);
+
+            // save setting of whether to use game time
+            hash ^= SettingsHelper.CreateSetting(document, settingsNode, "pauseGameTime", PauseGameTime);
+            return hash;
+        }
+
+        /// <summary>
         /// Save the current settings to xml.
         /// </summary>
         /// <param name="document">
@@ -215,48 +268,19 @@ namespace LiveSplit.ComponentAutosplitter
         {
             // create settingsNode
             XmlElement settingsNode = document.CreateElement("settings");
-
-            // create node for storing the current list of events. For each
-            // event it's type (derived from GameEvent) will be saved together
-            // with it's AttributeValues.
-            XmlElement usedEventsNode = document.CreateElement("usedEvents");
-            XmlElement eventNode;
-            XmlElement typeNode;
-            XmlElement attributeNode;
-            GameEvent gameEvent;
-            foreach (DataGridViewRow row in dgvSegmentEvents.Rows)
-            {
-                // get event from row
-                gameEvent = row.Cells[Event.Index].Value as GameEvent;
-                if (gameEvent == null)
-                {
-                    gameEvent = new EmptyEvent();
-                }
-
-                // save derived type of the event
-                eventNode = document.CreateElement("event");
-                typeNode = document.CreateElement("type");
-                typeNode.InnerText = gameEvent.GetType().ToString();
-                eventNode.AppendChild(typeNode);
-
-                // save all attribute values
-                foreach (string attributeValue in gameEvent.AttributeValues)
-                {
-                    attributeNode = document.CreateElement("attribute");
-                    attributeNode.InnerText = attributeValue;
-                    eventNode.AppendChild(attributeNode);
-                }
-
-                usedEventsNode.AppendChild(eventNode);
-            }
-            settingsNode.AppendChild(usedEventsNode);
-
-            // save setting of whether to use game time
-            XmlElement pauseGameTimeNode = document.CreateElement("pauseGameTime");
-            pauseGameTimeNode.InnerText = PauseGameTime.ToString();
-            settingsNode.AppendChild(pauseGameTimeNode);
-
+            CreateSettingsNode(document, settingsNode);
             return settingsNode;
+        }
+
+        /// <summary>
+        /// Gets the hash code representing the current settings.
+        /// </summary>
+        /// <returns>
+        /// The hash code representing the current settings.
+        /// </returns>
+        public int GetSettingsHashCode()
+        {
+            return CreateSettingsNode(null, null);
         }
 
         /// <summary>
@@ -280,27 +304,27 @@ namespace LiveSplit.ComponentAutosplitter
                 int i = 0;
                 GameEvent gameEvent;
                 Type type;
-                List<string> attributes;
+                List<string> attributeValues;
                 foreach (XmlNode eventNode in settings["usedEvents"].ChildNodes)
                 {
                     if (eventNode.FirstChild.HasChildNodes)
                     {
                         // get the type of the event.
-                        type = Type.GetType(eventNode.FirstChild.InnerText);
+                        type = Type.GetType(SettingsHelper.ParseString(eventNode["type"]));
 
                         // read the attributes of the event
-                        attributes = new List<string>();
-                        foreach (XmlNode node in eventNode.ChildNodes)
+                        attributeValues = new List<string>();
+                        foreach (XmlNode attributeNode in eventNode.ChildNodes)
                         {
-                            if (node != eventNode.FirstChild)
+                            if (attributeNode.Name == "attribute")
                             {
-                                attributes.Add(node.InnerText);
+                                attributeValues.Add(attributeNode.InnerText);
                             }
                         }
 
                         // Create a new GameEvent object based on the read type and attributes
                         // TODO: Exception handling
-                        gameEvent = Activator.CreateInstance(type, attributes.ToArray()) as GameEvent;
+                        gameEvent = Activator.CreateInstance(type, attributeValues.ToArray()) as GameEvent;
                     }
                     else
                     {
@@ -318,12 +342,8 @@ namespace LiveSplit.ComponentAutosplitter
                 eventsChanged = false;
             }
 
-            bool pauseGameTime;
-            if (settings["pauseGameTime"] != null && Boolean.TryParse(settings["pauseGameTime"].InnerText, out pauseGameTime))
-            {
-                // read setting of whether to use game time
-                PauseGameTime = pauseGameTime;
-            }
+            // read setting of whether to use game time
+            PauseGameTime = SettingsHelper.ParseBool(settings["pauseGameTime"], true);
         }
 
         private void btnChangeEvent_Click(object sender, EventArgs e)
