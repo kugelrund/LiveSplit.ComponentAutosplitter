@@ -79,8 +79,15 @@ namespace LiveSplit.ComponentAutosplitter
         public GameInfo(Process gameProcess)
         {
             this.gameProcess = gameProcess;
-            baseAddress = gameProcess.MainModule.BaseAddress;
-            GetVersion();
+            try
+            {
+                baseAddress = gameProcess.MainModule.BaseAddress;
+                GetVersion();
+            }
+            catch
+            {
+                throw new ArgumentException("Faulty process handle!");
+            }
         }
 
         /// <summary>

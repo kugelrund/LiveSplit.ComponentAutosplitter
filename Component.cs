@@ -108,7 +108,15 @@ namespace LiveSplit.ComponentAutosplitter
                 {
                     // if we found something create a GameInfo object based
                     // on the found process
-                    info = new GameInfo(gameProcess);
+                    try
+                    {
+                        info = new GameInfo(gameProcess);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // something was still wrong with the process, try again
+                        info = null;
+                    }
                 }
                 else
                 {
