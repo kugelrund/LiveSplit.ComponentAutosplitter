@@ -44,17 +44,17 @@ namespace LiveSplit.ComponentAutosplitter
                 lstEventTypes.Items.Add(Activator.CreateInstance(eventType));
             }
 
+            // default select the first one
+            lstEventTypes.SelectedIndex = 0;
             if (gameEvent != null)
             {
                 // If there was a previous value select that one
                 int index = Array.IndexOf(game.EventTypes, gameEvent.GetType());
-                lstEventTypes.Items[index] = gameEvent;
-                lstEventTypes.SelectedIndex = index;
-            }
-            else
-            {
-                // otherwise just select the first one
-                lstEventTypes.SelectedIndex = 0;
+                if (index != -1)
+                {
+                    lstEventTypes.Items[index] = gameEvent;
+                    lstEventTypes.SelectedIndex = index;
+                }
             }
         }
 
