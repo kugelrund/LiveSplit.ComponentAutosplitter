@@ -116,7 +116,7 @@ namespace LiveSplit.ComponentAutosplitter
                 dgvSegmentEvents.Rows[i].Cells[Segment.Index].Value = Segments[i].Name;
             }
             // We need to make a special entry for the final split
-            dgvSegmentEvents.Rows[Segments.Count].Cells[Segment.Index].Value = "--- End ---";
+            dgvSegmentEvents.Rows[neededRows - 1].Cells[Segment.Index].Value = "--- End ---";
         }
 
         /// <summary>
