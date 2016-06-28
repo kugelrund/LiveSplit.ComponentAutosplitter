@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using LiveSplit.ComponentUtil;
 
 namespace LiveSplit.ComponentAutosplitter
 {
@@ -81,7 +82,7 @@ namespace LiveSplit.ComponentAutosplitter
             this.gameProcess = gameProcess;
             try
             {
-                baseAddress = gameProcess.MainModule.BaseAddress;
+                baseAddress = gameProcess.MainModuleWow64Safe().BaseAddress;
                 GetVersion();
             }
             catch
