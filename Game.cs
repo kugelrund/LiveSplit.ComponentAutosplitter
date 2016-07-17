@@ -22,9 +22,9 @@ namespace LiveSplit.ComponentAutosplitter
         /// </summary>
         public abstract string Name { get; }
         /// <summary>
-        /// Executable name of the game.
+        /// Executable names of the game.
         /// </summary>
-        public abstract string ProcessName { get; }
+        public abstract string[] ProcessNames { get; }
 
         /// <summary>
         /// Allows to define a function that reads a GameEvent from an xml string

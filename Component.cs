@@ -102,25 +102,28 @@ namespace LiveSplit.ComponentAutosplitter
             }
             else
             {
+                // assuming we wont find anything info should be null
+                info = null;
+                Process gameProcess;
+
                 // if the game is not running try to find an active process
-                Process gameProcess = Process.GetProcessesByName(game.ProcessName).FirstOrDefault();
-                if (gameProcess != null && !gameProcess.HasExited)
+                foreach (string processName in game.ProcessNames)
                 {
-                    // if we found something create a GameInfo object based
-                    // on the found process
-                    try
+                    gameProcess = Process.GetProcessesByName(processName).FirstOrDefault();
+                    if (gameProcess != null && !gameProcess.HasExited)
                     {
-                        info = new GameInfo(gameProcess);
+                        // if we found something create a GameInfo object based
+                        // on the found process
+                        try
+                        {
+                            info = new GameInfo(gameProcess);
+                            break;
+                        }
+                        catch (ArgumentException)
+                        {
+                            // something was still wrong with the process, try again
+                        }
                     }
-                    catch (ArgumentException)
-                    {
-                        // something was still wrong with the process, try again
-                        info = null;
-                    }
-                }
-                else
-                {
-                    info = null;
                 }
             }
 
