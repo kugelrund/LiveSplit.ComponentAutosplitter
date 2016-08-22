@@ -235,15 +235,18 @@ namespace LiveSplit.ComponentAutosplitter
                 // get event from row
                 gameEvent = (row.Cells[Event.Index].Value as GameEvent) ?? new EmptyEvent();
 
-                // create xmlnode for thsi event
+                // create xmlnode for this event
                 eventNode = (document == null ? null : document.CreateElement("event"));
 
                 // save derived type of the event
                 hash ^= SettingsHelper.CreateSetting(document, eventNode, "type", gameEvent.GetType().ToString());
                 // save all attribute values
-                foreach (string attributeValue in gameEvent.AttributeValues)
+                if (gameEvent.AttributeValues != null)
                 {
-                    hash ^= SettingsHelper.CreateSetting(document, eventNode, "attribute", attributeValue);
+                    foreach (string attributeValue in gameEvent.AttributeValues)
+                    {
+                        hash ^= SettingsHelper.CreateSetting(document, eventNode, "attribute", attributeValue);
+                    }
                 }
 
                 usedEventsNode.AppendChild(eventNode);

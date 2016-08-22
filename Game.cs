@@ -133,7 +133,7 @@ namespace LiveSplit.ComponentAutosplitter
         /// <summary>
         /// Values of optional attributes that a GameEvent can have.
         /// </summary>
-        public abstract string[] AttributeValues { get; protected set; }
+        public abstract string[] AttributeValues { get; }
         /// <summary>
         /// Description for this GameEvent that can be shown in dialogs.
         /// </summary>
@@ -155,6 +155,15 @@ namespace LiveSplit.ComponentAutosplitter
     }
 
     /// <summary>
+    /// Abstract GameEvent that does not have any attributes.
+    /// </summary>
+    abstract class NoAttributeEvent : GameEvent
+    {
+        public override string[] AttributeNames => null;
+        public override string[] AttributeValues => null;
+    }
+
+    /// <summary>
     /// Abstract GameEvent that depends on a map of the game.
     /// </summary>
     abstract class MapEvent : GameEvent
@@ -162,10 +171,9 @@ namespace LiveSplit.ComponentAutosplitter
         /// <summary>
         /// A MapEvent depends on a map, so it has a matching attribute
         /// </summary>
-        private static readonly string[] attributeNames = { "Map" };
-
-        public override string[] AttributeNames => attributeNames;
-        public override string[] AttributeValues { get; protected set; }
+        private string[] attributeValues;
+        public override string[] AttributeNames => new string[] { "Map" };
+        public override string[] AttributeValues => attributeValues;
 
         /// <summary>
         /// The specific map that this MapEvent depends on.
@@ -178,7 +186,7 @@ namespace LiveSplit.ComponentAutosplitter
         public MapEvent()
         {
             map = "";
-            AttributeValues = new string[] { "" };
+            attributeValues = null;
         }
 
         /// <summary>
@@ -200,24 +208,15 @@ namespace LiveSplit.ComponentAutosplitter
                 this.map = map + ".bsp";
             }
 
-            AttributeValues = new string[] { this.map };
+            attributeValues = new string[] { this.map };
         }
     }
 
     /// <summary>
     /// Provides an EmptyEvent, i.e. an event that never happens.
     /// </summary>
-    class EmptyEvent : GameEvent
+    class EmptyEvent : NoAttributeEvent
     {
-        private static readonly string[] attributeNames = new string[] { };
-        private static string[] attributeValues = new string[] { };
-
-        public override string[] AttributeNames => attributeNames;
-        public override string[] AttributeValues
-        {
-            get { return attributeValues; }
-            protected set { attributeValues = value; }
-        }
         public override string Description => "No event";
 
         public override bool HasOccured(GameInfo info)
