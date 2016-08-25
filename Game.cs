@@ -186,7 +186,7 @@ namespace LiveSplit.ComponentAutosplitter
         public MapEvent()
         {
             map = "";
-            attributeValues = null;
+            attributeValues = new string[] { "" };
         }
 
         /// <summary>
