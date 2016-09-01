@@ -54,6 +54,7 @@ namespace LiveSplit.ComponentAutosplitter
                 {
                     lstEventTypes.Items[index] = gameEvent;
                     lstEventTypes.SelectedIndex = index;
+                    UpdateAttributes();
                 }
             }
         }
