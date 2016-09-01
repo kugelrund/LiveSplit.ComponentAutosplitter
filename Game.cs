@@ -196,14 +196,14 @@ namespace LiveSplit.ComponentAutosplitter
         /// <summary>
         /// A MapEvent depends on a map, so it has a matching attribute
         /// </summary>
-        private string[] attributeValues;
+        protected string[] attributeValues;
         public override string[] AttributeNames => new string[] { "Map" };
         public override string[] AttributeValues => attributeValues;
 
         /// <summary>
         /// The specific map that this MapEvent depends on.
         /// </summary>
-        protected readonly string map;
+        protected string map;
 
         /// <summary>
         /// Parameterless constructor for ChangeEventForm.
