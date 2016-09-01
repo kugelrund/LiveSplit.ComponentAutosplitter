@@ -30,7 +30,6 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lblUsedEvents = new System.Windows.Forms.Label();
-            this.chkPauseGameTime = new System.Windows.Forms.CheckBox();
             this.btnChangeEvent = new System.Windows.Forms.Button();
             this.btnMoveUp = new System.Windows.Forms.Button();
             this.btnMoveDown = new System.Windows.Forms.Button();
@@ -49,17 +48,6 @@
             this.lblUsedEvents.Size = new System.Drawing.Size(172, 13);
             this.lblUsedEvents.TabIndex = 5;
             this.lblUsedEvents.Text = "Split on these events (in this order):";
-            // 
-            // chkPauseGameTime
-            // 
-            this.chkPauseGameTime.AutoSize = true;
-            this.chkPauseGameTime.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this, "PauseGameTime", true));
-            this.chkPauseGameTime.Location = new System.Drawing.Point(13, 416);
-            this.chkPauseGameTime.Name = "chkPauseGameTime";
-            this.chkPauseGameTime.Size = new System.Drawing.Size(173, 17);
-            this.chkPauseGameTime.TabIndex = 14;
-            this.chkPauseGameTime.Text = "Pause game time when loading";
-            this.chkPauseGameTime.UseVisualStyleBackColor = true;
             // 
             // btnChangeEvent
             // 
@@ -145,11 +133,10 @@
             this.Controls.Add(this.btnMoveDown);
             this.Controls.Add(this.btnMoveUp);
             this.Controls.Add(this.btnChangeEvent);
-            this.Controls.Add(this.chkPauseGameTime);
             this.Controls.Add(this.lblUsedEvents);
             this.Name = "Settings";
             this.Padding = new System.Windows.Forms.Padding(7);
-            this.Size = new System.Drawing.Size(470, 457);
+            this.Size = new System.Drawing.Size(470, 425);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSegmentEvents)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -159,7 +146,6 @@
         #endregion
 
         private System.Windows.Forms.Label lblUsedEvents;
-        private System.Windows.Forms.CheckBox chkPauseGameTime;
         private System.Windows.Forms.Button btnChangeEvent;
         private System.Windows.Forms.Button btnMoveUp;
         private System.Windows.Forms.Button btnMoveDown;

@@ -25,6 +25,14 @@ namespace LiveSplit.ComponentAutosplitter
         /// Executable names of the game.
         /// </summary>
         public abstract string[] ProcessNames { get; }
+        /// <summary>
+        /// Whether game time is supported for the game.
+        /// </summary>
+        public abstract bool GameTimeExists { get; }
+        /// <summary>
+        /// Whether load removal is supported for the game.
+        /// </summary>
+        public abstract bool LoadRemovalExists { get; }
 
         /// <summary>
         /// Allows to define a function that reads a GameEvent from an xml string
@@ -70,6 +78,10 @@ namespace LiveSplit.ComponentAutosplitter
         /// Whether the game is currently ingame, e.g. not in a loading state.
         /// </summary>
         public bool InGame { get; protected set; }
+        /// <summary>
+        /// Current game time if supported.
+        /// </summary>
+        public double GameTime { get; protected set; }
 
         /// <summary>
         /// Creates a GameInfo object for the give process.
@@ -101,6 +113,14 @@ namespace LiveSplit.ComponentAutosplitter
         }
 
         /// <summary>
+        /// Wrapper that calls the ResetInfo function.
+        /// </summary>
+        public void Reset()
+        {
+            ResetInfo();
+        }
+
+        /// <summary>
         /// Updates information about the game. This is expected to
         /// be implemented for each specific game
         /// </summary>
@@ -110,6 +130,11 @@ namespace LiveSplit.ComponentAutosplitter
         /// Gets the version of the game and sets stuff up accordingly.
         /// </summary>
         partial void GetVersion();
+
+        /// <summary>
+        /// Used to reset stuff like game time.
+        /// </summary>
+        partial void ResetInfo();
     }
 
     /// <summary>
@@ -197,17 +222,7 @@ namespace LiveSplit.ComponentAutosplitter
         /// </param>
         public MapEvent(string map)
         {
-            // TODO: meh this should not be here cause it's engine specific
-            //       but i guess it works for a lot of games...
-            if (map.EndsWith(".bsp"))
-            {
-                this.map = map;
-            }
-            else
-            {
-                this.map = map + ".bsp";
-            }
-
+            this.map = map;
             attributeValues = new string[] { this.map };
         }
     }

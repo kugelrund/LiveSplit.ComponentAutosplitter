@@ -57,6 +57,7 @@ namespace LiveSplit.ComponentAutosplitter
 
             model = new TimerModel() { CurrentState = state };
             model.CurrentState.OnStart += State_OnStart;
+            model.CurrentState.OnReset += State_OnReset;
 
             settings = new Settings(game);
             eventList = settings.GetEventList();
@@ -68,7 +69,18 @@ namespace LiveSplit.ComponentAutosplitter
         /// </summary>
         private void State_OnStart(object sender, EventArgs e)
         {
-            model.InitializeGameTime();
+            if (game.GameTimeExists || game.LoadRemovalExists)
+            {
+                model.InitializeGameTime();
+            }
+        }
+
+        private void State_OnReset(object sender, TimerPhase value)
+        {
+            if (info != null)
+            {
+                info.Reset();
+            }
         }
 
         /// <summary>
@@ -85,7 +97,14 @@ namespace LiveSplit.ComponentAutosplitter
                     // if the current event just occured it's time to split (or start the timer).
                     if (state.CurrentPhase == TimerPhase.NotRunning)
                     {
-                        state.IsGameTimePaused = false;
+                        if (game.GameTimeExists)
+                        {
+                            state.SetGameTime(TimeSpan.Zero);
+                        }
+                        else if (game.LoadRemovalExists)
+                        {
+                            state.IsGameTimePaused = false;
+                        }
                         model.Start();
                     }
                     else
@@ -94,8 +113,13 @@ namespace LiveSplit.ComponentAutosplitter
                     }
                 }
 
-                // deal with gametime. TODO: real game time (e.g. Quake)
-                if (settings.PauseGameTime)
+                // deal with gametime.
+                if (game.GameTimeExists)
+                {
+                    state.IsGameTimePaused = true;
+                    state.SetGameTime(TimeSpan.FromSeconds(info.GameTime));
+                }
+                else if (game.LoadRemovalExists)
                 {
                     state.IsGameTimePaused = !info.InGame;
                 }
@@ -158,6 +182,7 @@ namespace LiveSplit.ComponentAutosplitter
         public override void Dispose()
         {
             model.CurrentState.OnStart -= State_OnStart;
+            model.CurrentState.OnReset -= State_OnReset;
             settings.EventsChanged -= settings_EventsChanged;
             settings.Dispose();
         }

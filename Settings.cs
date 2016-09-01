@@ -32,10 +32,6 @@ namespace LiveSplit.ComponentAutosplitter
         }
 
         /// <summary>
-        /// Setting of whether to use GameTime.
-        /// </summary>
-        public bool PauseGameTime { get; private set; }
-        /// <summary>
         /// Current list of segments of the run. Used in the DataGridView for the
         /// user to conveniently set events to split on for specific segments.
         /// </summary>
@@ -54,7 +50,6 @@ namespace LiveSplit.ComponentAutosplitter
             InitializeComponent();
             this.game = game;
             HandleDestroyed += Settings_HandleDestroyed;
-            PauseGameTime = true;
         }
 
         /// <summary>
@@ -253,8 +248,6 @@ namespace LiveSplit.ComponentAutosplitter
             }
             settingsNode.AppendChild(usedEventsNode);
 
-            // save setting of whether to use game time
-            hash ^= SettingsHelper.CreateSetting(document, settingsNode, "pauseGameTime", PauseGameTime);
             return hash;
         }
 
@@ -344,9 +337,6 @@ namespace LiveSplit.ComponentAutosplitter
                 OnChanged(EventArgs.Empty);
                 eventsChanged = false;
             }
-
-            // read setting of whether to use game time
-            PauseGameTime = SettingsHelper.ParseBool(settings["pauseGameTime"], true);
         }
 
         private void btnChangeEvent_Click(object sender, EventArgs e)
