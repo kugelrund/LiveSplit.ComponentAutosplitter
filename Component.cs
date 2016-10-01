@@ -97,6 +97,7 @@ namespace LiveSplit.ComponentAutosplitter
                     // if the current event just occured it's time to split (or start the timer).
                     if (state.CurrentPhase == TimerPhase.NotRunning)
                     {
+                        info.Reset();
                         if (game.GameTimeExists)
                         {
                             state.SetGameTime(TimeSpan.Zero);
