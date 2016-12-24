@@ -61,7 +61,7 @@ namespace LiveSplit.ComponentAutosplitter
 
             settings = new Settings(game);
             eventList = settings.GetEventList();
-            settings.EventsChanged += settings_EventsChanged;
+            settings.SettingsChanged += settings_Changed;
         }
 
         /// <summary>
@@ -142,6 +142,7 @@ namespace LiveSplit.ComponentAutosplitter
                         try
                         {
                             info = new GameInfo(gameProcess);
+                            info.UpdateCustomSettings(game.CustomSettings);
                             break;
                         }
                         catch (ArgumentException)
@@ -157,11 +158,15 @@ namespace LiveSplit.ComponentAutosplitter
         }
 
         /// <summary>
-        /// Listener for when the eventslist changed in the settings.
+        /// Listener for when the eventslist or a custom setting changed in the settings.
         /// </summary>
-        private void settings_EventsChanged(object sender, EventArgs e)
+        private void settings_Changed(object sender, EventArgs e)
         {
             eventList = settings.GetEventList();
+            if (info != null)
+            {
+                info.UpdateCustomSettings(game.CustomSettings);
+            }
         }
 
         public override System.Windows.Forms.Control GetSettingsControl(UI.LayoutMode mode)
@@ -184,7 +189,7 @@ namespace LiveSplit.ComponentAutosplitter
         {
             model.CurrentState.OnStart -= State_OnStart;
             model.CurrentState.OnReset -= State_OnReset;
-            settings.EventsChanged -= settings_EventsChanged;
+            settings.SettingsChanged -= settings_Changed;
             settings.Dispose();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
@@ -24,11 +25,11 @@ namespace LiveSplit.ComponentAutosplitter
         /// Stuff for signaling when the eventlist changes so that the
         /// Component class can properly use the new eventlist.
         /// </summary>
-        private bool eventsChanged = false;
-        public event EventHandler EventsChanged;
+        private bool settingsChanged = false;
+        public event EventHandler SettingsChanged;
         protected virtual void OnChanged(EventArgs e)
         {
-            EventsChanged?.Invoke(this, e);
+            SettingsChanged?.Invoke(this, e);
         }
 
         /// <summary>
@@ -48,6 +49,16 @@ namespace LiveSplit.ComponentAutosplitter
         public Settings(Game game)
         {
             InitializeComponent();
+            // prepare custom settings and add controls to the form
+            foreach (CustomSettingBool customSetting in game.CustomSettings)
+            {
+                tlpMain.RowCount += 1;
+                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+                tlpMain.Controls.Add(customSetting.Control, 0, tlpMain.RowCount - 1);
+                customSetting.Control.CheckedChanged += CustomSettingControl_CheckedChanged;
+                Size = new Size(Size.Width, Size.Height + 30);
+            }
+
             this.game = game;
             HandleDestroyed += Settings_HandleDestroyed;
         }
@@ -132,7 +143,7 @@ namespace LiveSplit.ComponentAutosplitter
 
             // set new event
             eventCell.Value = form.NewEvent;
-            eventsChanged = true;
+            settingsChanged = true;
         }
 
         /// <summary>
@@ -144,7 +155,7 @@ namespace LiveSplit.ComponentAutosplitter
             {
                 row.Cells[Event.Index].Value = null;
             }
-            eventsChanged = true;
+            settingsChanged = true;
         }
 
         /// <summary>
@@ -197,7 +208,7 @@ namespace LiveSplit.ComponentAutosplitter
             }
 
             // order changed so we have to rebuild list of events
-            eventsChanged = true;
+            settingsChanged = true;
         }
 
         /// <summary>
@@ -247,6 +258,17 @@ namespace LiveSplit.ComponentAutosplitter
                 usedEventsNode.AppendChild(eventNode);
             }
             settingsNode.AppendChild(usedEventsNode);
+
+            // create nodes for custom settings
+            XmlElement customSettingsNode = document.CreateElement("customSettings");
+            XmlElement customSettingBoolNode;
+            foreach (CustomSettingBool customSetting in game.CustomSettings)
+            {
+                customSettingBoolNode = document.CreateElement("customSettingBool");
+                hash ^= SettingsHelper.CreateSetting(document, customSettingBoolNode, "value", customSetting.Value);
+                customSettingsNode.AppendChild(customSettingBoolNode);
+            }
+            settingsNode.AppendChild(customSettingsNode);
 
             return hash;
         }
@@ -332,11 +354,22 @@ namespace LiveSplit.ComponentAutosplitter
                     dgvSegmentEvents.Rows[i].Cells[Event.Index].Value = gameEvent;
                     i += 1;
                 }
-
-                // signal that events have changed
-                OnChanged(EventArgs.Empty);
-                eventsChanged = false;
             }
+
+            // read custom settings if any
+            if (settings["customSettings"] != null)
+            {
+                int i = 0;
+                foreach (XmlNode customSettingNode in settings["customSettings"].ChildNodes)
+                {
+                    game.CustomSettings[i].Value = SettingsHelper.ParseBool(customSettingNode["value"]);
+                    i += 1;
+                }
+            }
+
+            // signal that settings have changed
+            OnChanged(EventArgs.Empty);
+            settingsChanged = false;
         }
 
         private void btnChangeEvent_Click(object sender, EventArgs e)
@@ -371,15 +404,20 @@ namespace LiveSplit.ComponentAutosplitter
             }
         }
 
+        private void CustomSettingControl_CheckedChanged(object sender, EventArgs e)
+        {
+            settingsChanged = true;
+        }
+
         /// <summary>
         /// Signals that events changed if thats the case. This makes sense because
         /// this event fires when the form closes.
         /// </summary>
         private void Settings_HandleDestroyed(object sender, EventArgs e)
         {
-            if (eventsChanged)
+            if (settingsChanged)
             {
-                eventsChanged = false;
+                settingsChanged = false;
                 OnChanged(EventArgs.Empty);
             }
         }

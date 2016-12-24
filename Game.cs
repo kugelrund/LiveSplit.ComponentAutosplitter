@@ -33,6 +33,19 @@ namespace LiveSplit.ComponentAutosplitter
         /// Whether load removal is supported for the game.
         /// </summary>
         public abstract bool LoadRemovalExists { get; }
+        /// <summary>
+        /// Array of custom settings
+        /// </summary>
+        public readonly CustomSettingBool[] CustomSettings;
+
+        /// <summary>
+        /// Constructor for custom settings
+        /// </summary>
+        /// <param name="customSettings">custom settings</param>
+        public Game(CustomSettingBool[] customSettings)
+        {
+            CustomSettings = customSettings;
+        }
 
         /// <summary>
         /// Allows to define a function that reads a GameEvent from an xml string
@@ -104,6 +117,14 @@ namespace LiveSplit.ComponentAutosplitter
         }
 
         /// <summary>
+        /// Wrapper that calls the SetCustomSettings function.
+        /// </summary>
+        public void UpdateCustomSettings(CustomSettingBool[] customSettings)
+        {
+            SetCustomSettings(customSettings);
+        }
+
+        /// <summary>
         /// Wrapper that calls the UpdateInfo function to update information
         /// about the game.
         /// </summary>
@@ -119,6 +140,11 @@ namespace LiveSplit.ComponentAutosplitter
         {
             ResetInfo();
         }
+
+        /// <summary>
+        /// Update custom settings
+        /// </summary>
+        partial void SetCustomSettings(CustomSettingBool[] customSettings);
 
         /// <summary>
         /// Updates information about the game. This is expected to
