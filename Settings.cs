@@ -54,8 +54,9 @@ namespace LiveSplit.ComponentAutosplitter
             {
                 tlpMain.RowCount += 1;
                 tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
-                tlpMain.Controls.Add(customSetting.Control, 0, tlpMain.RowCount - 1);
-                customSetting.Control.CheckedChanged += CustomSettingControl_CheckedChanged;
+                CheckBox customControl = customSetting.GetControl();
+                customControl.CheckedChanged += CustomSettingControl_CheckedChanged;
+                tlpMain.Controls.Add(customControl, 0, tlpMain.RowCount - 1);
                 Size = new Size(Size.Width, Size.Height + 30);
             }
 

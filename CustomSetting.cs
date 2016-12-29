@@ -6,17 +6,22 @@ namespace LiveSplit.ComponentAutosplitter
     {
         public string Description { get; }
         public bool Value { get; set; }
-        public CheckBox Control { get; }
+        private CheckBox control;
 
         public CustomSettingBool(string description, bool defaultValue)
         {
             Description = description;
             Value = defaultValue;
-            Control = new CheckBox();
-            Control.Checked = Value;
-            Control.Text = Description;
-            Control.Dock = DockStyle.Fill;
-            Control.DataBindings.Add("Checked", this, "Value", false, DataSourceUpdateMode.OnPropertyChanged);
+        }
+
+        public CheckBox GetControl()
+        {
+            control = new CheckBox();
+            control.Checked = Value;
+            control.Text = Description;
+            control.Dock = DockStyle.Fill;
+            control.DataBindings.Add("Checked", this, "Value", false, DataSourceUpdateMode.OnPropertyChanged);
+            return control;
         }
     }
 }
