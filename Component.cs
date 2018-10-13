@@ -69,7 +69,7 @@ namespace LiveSplit.ComponentAutosplitter
         /// </summary>
         private void State_OnStart(object sender, EventArgs e)
         {
-            if (game.GameTimeExists || game.LoadRemovalExists)
+            if (info.GameTimeExists || info.LoadRemovalExists)
             {
                 model.InitializeGameTime();
             }
@@ -98,11 +98,11 @@ namespace LiveSplit.ComponentAutosplitter
                     if (state.CurrentPhase == TimerPhase.NotRunning)
                     {
                         info.Reset();
-                        if (game.GameTimeExists)
+                        if (info.GameTimeExists)
                         {
                             state.SetGameTime(TimeSpan.Zero);
                         }
-                        else if (game.LoadRemovalExists)
+                        else if (info.LoadRemovalExists)
                         {
                             state.IsGameTimePaused = false;
                         }
@@ -115,12 +115,12 @@ namespace LiveSplit.ComponentAutosplitter
                 }
 
                 // deal with gametime.
-                if (game.GameTimeExists)
+                if (info.GameTimeExists)
                 {
                     state.IsGameTimePaused = true;
-                    state.SetGameTime(TimeSpan.FromSeconds(info.GameTime));
+                    state.SetGameTime(info.GameTime);
                 }
-                else if (game.LoadRemovalExists)
+                else if (info.LoadRemovalExists)
                 {
                     state.IsGameTimePaused = !info.InGame;
                 }

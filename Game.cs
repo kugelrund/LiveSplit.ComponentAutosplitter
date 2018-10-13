@@ -26,14 +26,6 @@ namespace LiveSplit.ComponentAutosplitter
         /// </summary>
         public abstract string[] ProcessNames { get; }
         /// <summary>
-        /// Whether game time is supported for the game.
-        /// </summary>
-        public abstract bool GameTimeExists { get; }
-        /// <summary>
-        /// Whether load removal is supported for the game.
-        /// </summary>
-        public abstract bool LoadRemovalExists { get; }
-        /// <summary>
         /// Array of custom settings
         /// </summary>
         public readonly CustomSettingBool[] CustomSettings;
@@ -94,7 +86,7 @@ namespace LiveSplit.ComponentAutosplitter
         /// <summary>
         /// Current game time if supported.
         /// </summary>
-        public double GameTime { get; protected set; }
+        public TimeSpan GameTime { get; protected set; }
 
         /// <summary>
         /// Creates a GameInfo object for the give process.
