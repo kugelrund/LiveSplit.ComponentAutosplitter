@@ -92,6 +92,16 @@ namespace LiveSplit.ComponentAutosplitter
             {
                 // if the game is running update our information about it
                 info.Update();
+                if (info.GameTimeExists)
+                {
+                    state.IsGameTimePaused = true;
+                    state.SetGameTime(info.GameTime);
+                }
+                else if (info.LoadRemovalExists)
+                {
+                    state.IsGameTimePaused = !info.InGame;
+                }
+
                 if (state.CurrentSplitIndex + 1 < eventList.Length && eventList[state.CurrentSplitIndex + 1].HasOccured(info))
                 {
                     // if the current event just occured it's time to split (or start the timer).
@@ -112,17 +122,6 @@ namespace LiveSplit.ComponentAutosplitter
                     {
                         model.Split();
                     }
-                }
-
-                // deal with gametime.
-                if (info.GameTimeExists)
-                {
-                    state.IsGameTimePaused = true;
-                    state.SetGameTime(info.GameTime);
-                }
-                else if (info.LoadRemovalExists)
-                {
-                    state.IsGameTimePaused = !info.InGame;
                 }
             }
             else
