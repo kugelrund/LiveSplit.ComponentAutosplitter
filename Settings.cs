@@ -363,6 +363,10 @@ namespace LiveSplit.ComponentAutosplitter
                 int i = 0;
                 foreach (XmlNode customSettingNode in settings["customSettings"].ChildNodes)
                 {
+                    if (i >= game.CustomSettings.Length)
+                    {
+                        break;
+                    }
                     game.CustomSettings[i].Value = SettingsHelper.ParseBool(customSettingNode["value"]);
                     i += 1;
                 }
